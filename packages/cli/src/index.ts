@@ -75,8 +75,17 @@ program
   .action(async (task: string) => {
     const cwd = process.cwd();
     const result = await findRelevantContext(cwd, task);
+    const warnings = result.warnings ?? [];
+    const suggestions = result.suggestions ?? [];
+    const noStrongMatch = result.noStrongMatch ?? false;
 
     console.log(`Task: ${result.task}`);
+    for (const warning of warnings) console.log(`Warning: ${warning}`);
+    if (noStrongMatch) {
+      console.log("No strong match found");
+      for (const suggestion of suggestions) console.log(`Suggestion: ${suggestion}`);
+      return;
+    }
     console.log(`Relevant domains: ${result.domains.join(", ") || "(none)"}`);
     console.log("Top relevant files:");
     if (result.topFiles.length === 0) console.log("- (none)");

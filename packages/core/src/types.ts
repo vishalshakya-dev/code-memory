@@ -1,4 +1,10 @@
 export const DEFAULT_IGNORE_PATTERNS = [
+  "**/.DS_Store",
+  "**/supabase/.temp/**",
+  "**/.agent/**",
+  "**/.lovable/**",
+  "**/.plans/**",
+  "**/.ai/**",
   "**/node_modules/**",
   "**/.git/**",
   "**/dist/**",
@@ -65,4 +71,7 @@ export interface RelevantResult {
   topFiles: string[];
   entryPoints: string[];
   concepts: string[];
+  noStrongMatch: boolean;
+  warnings: string[];
+  suggestions: string[];
 }

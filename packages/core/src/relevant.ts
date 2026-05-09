@@ -52,6 +52,13 @@ const FILE_KEYWORDS = [
   "dashboard",
   "analytics"
 ];
+const STRONG_DOMAIN_MATCH_SCORE = 6;
+const STRONG_FILE_MATCH_SCORE = 10;
+const SUBPACKAGE_WARNING = "You may be running inside a subpackage. Run from repository root for full context.";
+const NO_STRONG_MATCH_SUGGESTIONS = [
+  "Run from repository root for full context.",
+  "Improve context by running `code-memory init` and `code-memory analyze`."
+];
 
 function tokenize(text: string): string[] {
   return (text.toLowerCase().match(/[a-z0-9]+/g) ?? []).filter((t) => t.length > 1);
@@ -190,6 +197,23 @@ function expandWithDependencies(
   return topN(expanded, 6);
 }
 
+async function detectSubpackageWarning(rootDir: string): Promise<string | null> {
+  const cwdHasPackageJson = await fs.pathExists(path.join(rootDir, "package.json"));
+  if (!cwdHasPackageJson) return null;
+
+  let cursor = path.resolve(rootDir);
+  while (true) {
+    const parent = path.dirname(cursor);
+    if (parent === cursor) return null;
+
+    const hasPackageJson = await fs.pathExists(path.join(parent, "package.json"));
+    const hasWorkspace = await fs.pathExists(path.join(parent, "pnpm-workspace.yaml"));
+    const hasGit = await fs.pathExists(path.join(parent, ".git"));
+    if (hasPackageJson || hasWorkspace || hasGit) return SUBPACKAGE_WARNING;
+    cursor = parent;
+  }
+}
+
 export async function findRelevantContext(rootDir: string, task: string): Promise<RelevantResult> {
   const aiDir = path.join(rootDir, CODE_MEMORY_METADATA.contextPaths.aiDir);
   const projectContextPath = path.join(aiDir, CODE_MEMORY_METADATA.contextPaths.projectContextFile);
@@ -200,6 +224,8 @@ export async function findRelevantContext(rootDir: string, task: string): Promis
     "*.md"
   );
   const graphPath = path.join(aiDir, CODE_MEMORY_METADATA.contextPaths.dependencyGraphFile);
+  const warning = await detectSubpackageWarning(rootDir);
+  const warnings = warning ? [warning] : [];
 
   // Ensure required context files exist and are valid.
   await fs.readFile(projectContextPath, "utf8");
@@ -244,6 +270,9 @@ export async function findRelevantContext(rootDir: string, task: string): Promis
     .filter((f) => f.score > 0)
     .sort((a, b) => b.score - a.score || a.file.localeCompare(b.file))
     .map((f) => f.file);
+  const strongDomainMatches = rankedDomains.filter((d) => d.score >= STRONG_DOMAIN_MATCH_SCORE);
+  const strongFileMatches = allFilesScored.filter((f) => f.score >= STRONG_FILE_MATCH_SCORE);
+  const hasStrongMatch = strongDomainMatches.length > 0 || strongFileMatches.length > 0;
 
   const selectedDocs = parsed.filter((d) => domainSet.has(d.domain));
   const entryPoints = topN(
@@ -265,11 +294,27 @@ export async function findRelevantContext(rootDir: string, task: string): Promis
   const expandedFiles = expandWithDependencies(baseTopFiles, graph, relevantDomains, taskTokens);
   const combinedTopFiles = topN([...baseTopFiles, ...expandedFiles], 12);
 
+  if (!hasStrongMatch) {
+    return {
+      task,
+      domains: [],
+      topFiles: [],
+      entryPoints: [],
+      concepts: [],
+      noStrongMatch: true,
+      warnings,
+      suggestions: [...NO_STRONG_MATCH_SUGGESTIONS]
+    };
+  }
+
   return {
     task,
     domains: domainNames,
     topFiles: combinedTopFiles,
     entryPoints,
-    concepts
+    concepts,
+    noStrongMatch: false,
+    warnings,
+    suggestions: []
   };
 }

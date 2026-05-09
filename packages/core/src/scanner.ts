@@ -8,7 +8,7 @@ export async function scanRepository(rootDir: string): Promise<ScanResult> {
     dot: true,
     onlyFiles: true,
     unique: true,
-    ignore: [...DEFAULT_IGNORE_PATTERNS, ".ai/**"]
+    ignore: [...DEFAULT_IGNORE_PATTERNS]
   });
 
   const normalized = files.map((f) => f.split(path.sep).join("/")).sort();

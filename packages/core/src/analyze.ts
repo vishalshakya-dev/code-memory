@@ -257,7 +257,7 @@ function renderDomainMarkdown(summary: DomainSummary, index: ContextIndex): stri
   const analysisFiles = summary.allFiles ?? summary.files;
   const stacks = detectStacks(analysisFiles);
   const technologies = detectTechnologies(index, analysisFiles, stacks);
-  const concepts = detectConcepts(analysisFiles);
+  const concepts = detectConcepts(summary.files, { requireStrongSupport: true });
   const keyFolders = inferKeyFolders(analysisFiles);
   const responsibilities = inferResponsibilities(summary.domain, technologies, concepts);
   const entryPoints = inferEntryPoints(analysisFiles, summary.domain);

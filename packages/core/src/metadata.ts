@@ -4,7 +4,7 @@ export const CODE_MEMORY_METADATA = {
   packageScope: "code-memory",
   corePackageName: "code-memory-core",
   cliPackageName: "code-memory-cli",
-  version: "0.1.0",
+  version: "0.1.2",
   contextPaths: {
     aiDir: ".ai",
     projectContextFile: "project-context.md",

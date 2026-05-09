@@ -132,10 +132,13 @@ describe("findRelevantContext", () => {
     const root = await setupContextFiles();
     const result = await findRelevantContext(root, "improve reliability");
 
-    expect(result.domains.length).toBeGreaterThan(0);
-    expect(result.topFiles.length).toBeLessThanOrEqual(12);
-    expect(result.entryPoints.length).toBeLessThanOrEqual(8);
-    expect(result.concepts.length).toBeLessThanOrEqual(8);
+    expect(result.noStrongMatch).toBe(true);
+    expect(result.domains).toEqual([]);
+    expect(result.topFiles).toEqual([]);
+    expect(result.entryPoints).toEqual([]);
+    expect(result.concepts).toEqual([]);
+    expect(result.suggestions.join("\n")).toContain("repository root");
+    expect(result.suggestions.join("\n")).toContain("code-memory init");
   });
 
   it("ignores metadata bullets from generated domain footers", async () => {
@@ -260,5 +263,57 @@ describe("findRelevantContext", () => {
     expect(joined).toContain("ModerationPanel");
     expect(joined).not.toContain("SpinnerWidget");
     expect(joined).not.toContain("ImagePlaceholder");
+  });
+
+  it("warns when running relevant inside a subpackage", async () => {
+    const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "code-memory-relevant-repo-"));
+    tempDirs.push(repoRoot);
+    await fs.ensureDir(path.join(repoRoot, ".git"));
+    await fs.writeFile(path.join(repoRoot, "package.json"), '{"name":"repo-root"}', "utf8");
+    const subpkgRoot = path.join(repoRoot, "packages", "web");
+    await fs.ensureDir(subpkgRoot);
+    await fs.writeFile(path.join(subpkgRoot, "package.json"), '{"name":"subpkg"}', "utf8");
+    await fs.ensureDir(path.join(subpkgRoot, ".ai", "domains"));
+
+    await fs.writeFile(path.join(subpkgRoot, ".ai", "project-context.md"), "# Project Context\n", "utf8");
+    await fs.writeJSON(
+      path.join(subpkgRoot, ".ai", "context-index.json"),
+      {
+        schemaVersion: 1,
+        generatedAt: "2026-05-08T00:00:00.000Z",
+        rootDir: subpkgRoot,
+        ignored: [],
+        scannedFileCount: 2,
+        signals: ["has-package-json"],
+        projectKinds: ["node"],
+        categories: { configs: ["package.json"], source: ["src/auth.ts"], tests: [], docs: [], infra: [] }
+      },
+      { spaces: 2 }
+    );
+    await fs.writeFile(
+      path.join(subpkgRoot, ".ai", "domains", "auth.md"),
+      [
+        "# auth domain",
+        "",
+        "## Important entry points",
+        "",
+        "- src/auth.ts",
+        "",
+        "## Detected Concepts",
+        "",
+        "- authentication",
+        "",
+        "## Top relevant files",
+        "",
+        "- src/auth.ts"
+      ].join("\n"),
+      "utf8"
+    );
+
+    const result = await findRelevantContext(subpkgRoot, "fix auth bug");
+    expect(result.noStrongMatch).toBe(false);
+    expect(result.warnings).toContain(
+      "You may be running inside a subpackage. Run from repository root for full context."
+    );
   });
 });

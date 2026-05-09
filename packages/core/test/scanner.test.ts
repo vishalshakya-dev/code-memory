@@ -24,7 +24,12 @@ describe("scanRepository", () => {
   it("ignores known heavy directories", async () => {
     const root = await makeRepo([
       "src/index.ts",
+      ".DS_Store",
       "node_modules/pkg/index.js",
+      "supabase/.temp/worker.log",
+      ".agent/session/state.json",
+      ".lovable/runtime/cache.json",
+      ".plans/context.md",
       ".git/HEAD",
       "dist/out.js",
       "build/main.js",

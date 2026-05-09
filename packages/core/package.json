@@ -1,6 +1,6 @@
 {
   "name": "code-memory-core",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Core deterministic context engine for CodeMemory.",
   "keywords": [
     "code-memory",

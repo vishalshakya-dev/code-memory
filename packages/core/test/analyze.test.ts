@@ -405,4 +405,30 @@ describe("analyzeContext", () => {
     expect(content).toContain("src/routes/ProtectedRoute.tsx");
     expect(content).toContain("src/components/AuthModal.tsx");
   });
+
+  it("does not leak concepts into a domain without strong supporting files", async () => {
+    const rootDir = "/tmp/concept-leak-check";
+    const index: ContextIndex = {
+      schemaVersion: 1,
+      generatedAt: "2026-05-08T00:00:00.000Z",
+      rootDir,
+      ignored: [],
+      scannedFileCount: 3,
+      signals: ["has-package-json"],
+      projectKinds: ["node"],
+      categories: {
+        configs: ["package.json"],
+        source: ["src/services/providerSync.ts", "src/services/appService.ts", "src/services/taskOrchestrator.ts"],
+        tests: [],
+        docs: [],
+        infra: []
+      }
+    };
+    const root = await makeRootWithIndex(index);
+    const result = await analyzeContext(root);
+    const backendFile = result.generatedFiles.find((f) => f.endsWith("/backend.md"));
+    expect(backendFile).toBeDefined();
+    const backendContent = await fs.readFile(backendFile!, "utf8");
+    expect(backendContent).not.toContain("- webhook");
+  });
 });

@@ -1,6 +1,6 @@
 {
   "name": "code-memory-cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "CodeMemory CLI for deterministic local-first project context generation and routing.",
   "keywords": [
     "code-memory",
@@ -40,7 +40,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "code-memory-core": "^0.1.0",
+    "code-memory-core": "^0.1.2",
     "commander": "^14.0.0"
   },
   "devDependencies": {
