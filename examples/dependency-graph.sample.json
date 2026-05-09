@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-09T00:00:00.000Z",
+  "rootDir": "/path/to/project",
+  "nodes": {
+    "src/routes/ProtectedRoute.tsx": [
+      "src/hooks/useAuth.ts"
+    ],
+    "src/hooks/useAuth.ts": [
+      "src/providers/AuthProvider.tsx",
+      "src/services/authService.ts"
+    ],
+    "src/pages/login.tsx": [
+      "src/hooks/useAuth.ts"
+    ]
+  }
+}

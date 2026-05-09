@@ -1,0 +1,54 @@
+{
+  "name": "code-memory-core",
+  "version": "0.1.0",
+  "description": "Core deterministic context engine for CodeMemory.",
+  "keywords": [
+    "code-memory",
+    "ai",
+    "static-analysis",
+    "dependency-graph",
+    "code-context"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-memory/code-memory.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/code-memory/code-memory/tree/main/packages/core",
+  "bugs": {
+    "url": "https://github.com/code-memory/code-memory/issues"
+  },
+  "author": "CodeMemory Contributors",
+  "license": "MIT",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "prepack": "pnpm run build",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.3",
+    "fs-extra": "^11.3.0",
+    "simple-git": "^3.28.0",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "tsup": "^8.4.0"
+  }
+}

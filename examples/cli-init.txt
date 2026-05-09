@@ -1,0 +1,5 @@
+Context initialized for: /path/to/project
+Scanned files: 138
+Detected kinds: node, typescript, vite
+Wrote: /path/to/project/.ai/project-context.md
+Wrote: /path/to/project/.ai/context-index.json

@@ -1,0 +1,11 @@
+Task: fix authentication bug in protected route
+Relevant domains: auth, frontend
+Top relevant files:
+- src/hooks/useAuth.ts
+- src/routes/ProtectedRoute.tsx
+- src/providers/AuthProvider.tsx
+Important entry points:
+- src/routes/ProtectedRoute.tsx
+- src/pages/login.tsx
+Detected concepts:
+- authentication

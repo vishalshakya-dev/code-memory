@@ -1,0 +1,50 @@
+{
+  "name": "code-memory-cli",
+  "version": "0.1.1",
+  "description": "CodeMemory CLI for deterministic local-first project context generation and routing.",
+  "keywords": [
+    "code-memory",
+    "cli",
+    "ai",
+    "code-context",
+    "developer-tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-memory/code-memory.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/code-memory/code-memory/tree/main/packages/cli",
+  "bugs": {
+    "url": "https://github.com/code-memory/code-memory/issues"
+  },
+  "author": "CodeMemory Contributors",
+  "license": "MIT",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "code-memory": "dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "dev": "tsx src/index.ts",
+    "prepack": "pnpm run build",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "code-memory-core": "^0.1.0",
+    "commander": "^14.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.4"
+  }
+}

@@ -1,0 +1,13 @@
+.git
+.github
+.ai
+examples
+packages/**/test
+packages/**/src
+*.log
+coverage
+dist
+node_modules
+pnpm-lock.yaml
+tsconfig.base.json
+context.md
