@@ -8,6 +8,7 @@ coverage
 
 # generated artifacts
 .ai
+.plans/
 
 # package artifacts
 *.tgz
